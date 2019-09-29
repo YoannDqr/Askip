@@ -1,0 +1,98 @@
+{% load static cotisant_tags%}
+<div class="row module" id="postes">
+    <a style="font-weight:bold;display:none;" id="newPosteBtn" data-toggle="modal" data-target="#nouveau_poste">Nouveau Poste</a><br>
+    <form method="post" action="{%url 'cotisation.action' association=association.nom%}">
+        {%csrf_token%}
+    
+        <table style="width:100%;" class="table table-striped poste">
+            <thead>
+                <tr>
+                    <th style="width:20px;"><input id="master_poste" type="checkbox" value="TOUS"></th>
+                    <th>Intitule</th>
+                    <th>Description</th>
+                    <th>En poste</th>
+                    <th>Candidat</th>
+                    <th>CA</th>
+                    <th>Lecture tresorerie</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for poste in association.poste_set.all%}
+                <tr>
+                    <th style="width:20px;"><input type="checkbox" name="poste_check_{{poste.pk}}" class="poste_check" value="{{poste.pk}}"></th>
+                    <th>{{poste.titre}}</th>
+                    <th>{{poste.description}}</th>
+                    <th>
+                        {%for poste_user in poste.personne.all%}
+                        {{poste_user.first_name}} {{poste_user.last_name}} <br>
+                        {%endfor%}
+                    </th>
+                    <th>
+                        {%for poste_user in poste.candidat.all%}
+                        {{poste_user.first_name}} {{poste_user.last_name}} <br>
+                        {%endfor%}
+                    </th>
+                    <th><input type="checkbox"{%if poste.ca%}checked{%endif%} onclick="return false;"></th>
+                    <th><input type="checkbox"{%if poste.reader_tresorerie%}checked{%endif%} name="read_treso_{{poste.pk}}" value="{{poste.pk}}"></th>
+                </tr>
+            
+                {%endfor%}
+            </tbody>
+        </table>
+        <br>
+        <div class="form-group">
+            <div class="container">
+                <div class="col-md-1 col-sm-3 col-xs-3">
+                    <label for="action">Action</label>
+                </div>
+                <div class="col-md-3 col-sm-5 col-xs-5">
+                    <input type="hidden" name="action_poste" value="NULL">
+                    <select name="action" class="form-control" id="action" style="transform:translate(0px, -7px);">
+                        <option value="1">Supprimer</option>
+                        <option value="2">Ajouter/Enlever au CA</option>
+                        <option value="3">Ajouter/Enlever droit lecture trésorerie</option>
+                    </select>
+                </div>
+                <div class="col-md-2 col-md-offset-1 col-sm-3 col-sm-offset-1 col-xs-3 col-xs-offset-1">
+                    <button style="transform:translate(0px, -7px);" type="submit" class="btn btn-primary">Valider</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div id="nouveau_poste" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <center>
+                        <h4 class="modal-title">Nouveau Poste</h4>
+                    </center>
+                </div>
+                <div class="modal-body">
+                    <form method="POST">
+                        {%csrf_token%}
+                        <div class="form-group" id="titre_form">
+                            <label for="titre">Nom du poste</label>
+                            <input style="color:#000000;" type="text" class="form-control" max_length="100" id="poste_titre" name="poste_titre" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="form-label">Est au ca ?</label>
+                            <input type="checkbox" name="ca" value="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="" class="form-label"></label>
+                            <textarea name="description" class="form-control"></textarea>
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">Valider</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

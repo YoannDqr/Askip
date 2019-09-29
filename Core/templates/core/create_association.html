@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load tags static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}" />
+{% endblock %}
+
+{%block header%}
+    {% include "header.html" with active_tab="Associatif"%}
+{%endblock%}
+{% block content %}
+<div class="row">
+    <div class="container">
+        <form action="" method="POST">
+            {%csrf_token%}
+            {%for field in form%}
+            <div class="form-group">
+                <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{field|addcss:"form-control"}}
+            </div>
+            {%endfor%}
+            <div class="form-group">
+               <center><button type="submit" class="btn btn-default">Créer</button></center>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

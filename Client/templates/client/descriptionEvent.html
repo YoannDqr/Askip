@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load cotisant_tags tags static %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block script %}
+{% endblock %}
+
+{%block header%}
+    {% include "header.html" with active_tab="MonCompte"%}
+{%endblock%}
+
+{% block content %}
+<div class="row">
+    <table class="table table-stripped">
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Prix</th>
+            <th>Date de début</th>
+            <th>Date de fin</th>
+            <th>Nombre de participant</th>
+            <th>Nombre de place</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>{{evenement.nom}}</th>
+            <th>{{evenement.description}}</th>
+            <th>{{evenement.prix}}</th>
+            <th>{{evenement.startDate}}</th>
+            <th>{{evenement.endDate}}</th>
+            <th>{{evenement|nombre_participant}}</th>
+            <th>{{evenement.nombre_place}}</th>
+
+        </tr>
+    </table>
+    <form method="post" action="{% url 'client.paye_evenement' %}">
+        {% csrf_token %}
+        <input type="hidden" name="event_{{ evenement.pk }}" value="{{ evenement.pk }}">
+        <center><button class="btn btn-primary">Je participe</button></center>
+    </form>
+
+</div>
+
+<div class="row">
+    <center>
+        <h1> Description </h1>
+        <hr style="width:70%;">
+    </center>
+</div>
+
+<div class="row content">
+    <div class="container-fluid">
+        {% for description in descriptions %}
+
+        <div class="row description" pk="{{ description.pk_row }}">
+            {% for content in description.content %}
+            {% if description|fusion_constraint:content%}
+            <div class='col-md-{%  if description.fusion %}{{ description.taille_fusion }}{% else %}4{% endif %}
+                        content-description'
+                        {%  if description.fusion == False%}
+                        pk="{{ description.pk_row }}"
+                        {% endif %}>
+
+                {% if content.image %}
+                <img class="img-description" style="max-width:100%;" src="/media/{{ content.image }}" />
+                {% endif %}
+                {% if content.text %}
+                <p class="text-description"
+                    style="font-size:{{ content.fontsize }}px;
+                            text-align:{{ content.fontalign }};
+                            padding-top:{{ content.padding_top }}px;
+                            padding-bottom:{{ content.padding_bottom }}px;
+                            padding-left:{{ content.padding_left }}px;
+                            padding-right:{{ content.padding_right }}pxf;"
+                >
+                    {% autoescape off %}{{ content.text }}{% endautoescape %}</p>
+                {% endif %}
+
+            </div>
+
+            {% endif %}
+            {% endfor %}
+
+
+        </div>
+
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

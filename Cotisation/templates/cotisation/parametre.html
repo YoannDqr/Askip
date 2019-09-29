@@ -1,0 +1,139 @@
+<div id="parametre" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <center><h4 class="modal-title">Parametres</h4></center>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="">
+                    {%csrf_token%}
+                    <input type="hidden" name="parametre" value="1">
+                    <div class="form-group">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <label class="form-label">Ancien mot de passe</label>
+                                    <input class="form-control"type="password" name="old_mdp">
+                                </div>
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <label class="form-label">Nouveau mot de passe</label>
+                                    <input class="form-control"type="password" name="new_mdp">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="container-fluid">
+                            <div class="row" id="tresorier">
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <label for="" class="form-label">Gestion tésorerie</label><strong style="padding-left:30px;"onclick="addTresorier()">Ajouter un trésorier*</strong>
+                                    <select class="form-control tresorier" name="gestion_treso_0">
+                                        {%for poste in association.poste_set.all%}
+                                        <option value="{{poste.pk}}">{{poste.titre}}</option>
+                                        {%endfor%}
+                                    </select>
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <div class="container-fluid">
+                            <div class="row" id="mdp">
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <label for="" class="form-label gestion_mdp">Gestion mot de passe</label><strong style="padding-left:30px;"onclick="addMdp()">Ajouter un gestionnaire des mdp*</strong>
+                                    <select class="form-control mdp" name="gestion_mdp_0">
+                                        {%for poste in association.poste_set.all%}
+                                        <option value="{{poste.pk}}">{{poste.titre}}</option>
+                                        {%endfor%}
+                                    </select>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="container-fluid">
+                            <div class="row" id="deltreso">
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <label for="" class="form-label supprime_treso">Enlever droit trésorerie</label><strong style="padding-left:30px;"onclick="delTreso()">Supprimer un autre</strong>
+                                    <select class="form-control deltreso" name="supprime_droit_treso_0">
+                                        <option value="NULL">Poste</option>
+                                        {%for poste in association.gestionnaire_tresorerie%}
+                                        <option value="{{poste.pk}}">{{poste.titre}}</option>
+                                        {%endfor%}
+                                    </select>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="container-fluid">
+                            <div class="row" id="delmdp">
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <label for="" class="form-label supprime_mdp">Enlever droit mdp</label><strong style="padding-left:30px;"onclick="delMdp()">Supprimer un autre</strong>
+                                    <select class="form-control delmdp" name="supprime_droit_mdp_0">
+                                        <option value="NULL">Poste</option>
+                                        {%for poste in association.gestionnaire_mdp%}
+                                        <option value="{{poste.pk}}">{{poste.titre}}</option>
+                                        {%endfor%}
+                                    </select>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="container-fluid">
+                            <div class="row" id="delmdp">
+                                <div class="col-md-3 col-sm-3 col-xs-6">
+                                    <label for="" class="form-label">Module Trésorerie</label>
+                                    <input style="float:right;" type="checkbox" {%if association.module_tresorerie%}checked{%endif%} name="module_treso" value="{{association.pk}}">
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-6">
+                                    <label for="" class="form-label">Module Club</label>
+                                    <input style="float:right;" type="checkbox" {%if association.module_club%}checked{%endif%} name="module_club" value="{{association.pk}}">
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-6">
+                                    <label for="" class="form-label">Module Vote</label>
+                                    <input style="float:right;" type="checkbox" {%if association.module_vote%}checked{%endif%} name="module_vote" value="{{association.pk}}">
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-6">
+                                    <label for="" class="form-label">Module Evénement</label>
+                                    <input style="float:right;" type="checkbox" {%if association.module_evenement%}checked{%endif%} name="module_event" value="{{association.pk}}">
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-6">
+                                    <label for="" class="form-label">Module Vente</label>
+                                    <input style="float:right;" type="checkbox" {%if association.module_vente%}checked{%endif%} name="module_vente" value="{{association.pk}}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="container-fluid" >
+                            <label class="form-label">Description de l'association (Markers HTML autorisés)</label>
+                            <textarea class="form-control" rows=20 name="description">{{association.description}}</textarea>
+                        </div>
+                    </div>
+    
+
+                    <div class="form-group">
+                        <center>
+                            <button type="submit" class="btn btn-default">Valider</button>
+                        </center>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <p>*Trésorier : personne qui aura le droit de modifier la trésorerie de l'association</p>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

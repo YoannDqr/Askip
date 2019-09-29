@@ -1,0 +1,49 @@
+ 
+.circle{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+}
+
+.assos{
+    margin-top:50px;
+    position:fixed; 
+    width:300px; 
+    overflow-y:scroll; 
+    border:2px solid #000;
+    border-radius:5% 5%;
+    padding:50px;
+}
+
+label.association{
+    padding-right:10px;
+    padding-left:10px;
+}
+
+.description{
+    margin-left:10px;
+    font-size:12px;
+}
+
+.description_asso{
+    padding-top:50px;
+    margin-bottom:50px;
+}
+
+@media only screen and (max-width: 1100px) {
+    #controlPanel{
+        display:none;
+    }
+    #controlPanelMobile{
+        display:block;
+    }
+}
+
+@media only screen and (min-width: 1100px) {
+    #controlPanelMobile{
+        display:none;
+    }
+    #controlPanel{
+        display:block;
+    }
+}

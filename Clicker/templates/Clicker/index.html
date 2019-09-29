@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load tagsClicker static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/clicker.css' %}" />
+{% endblock %}
+
+
+{% block content %}
+
+</div>
+<div class="container-liquid">
+    <div class="col-md-4" id="clicker" style="background:#000;">
+        <div class="row" id="cagnotte_">
+            <h1 id="Cagnotte">{{user.nombre_cookie}}</h1>
+        </div>
+        <div class="row">
+            <center>
+                <p class="strong"> Of Marques</p>
+            </center>
+        </div>
+        <div class="row" id="cagnotte-block">
+            <img onclick="increment();"id="image-clicker" src="{%static '/img/Acacio.png'%}">
+        </div>
+    </div>
+    <div class="col-md-6" id="aventure" >
+        {%for niveau in user.items.all%}
+                <canvas id="canvas_{{niveau.pk}}" style="background-color:#eaeaea;"></canvas>
+        {%endfor%}
+    </div>
+    <div class="col-md-2" id="achievment" >
+        <div class="row store" style="background:#000;">
+            <h1 class="titre">Store</h1>
+        </div>
+        <div class="row store" style="height:100px;background:#eaeaea;border-bottom:4px solid #000;">
+
+
+        </div>
+        {%for niveau in user.items.all%}
+
+        <div onclick="addCookie({{niveau.pk}})" class="row items" pk="{{niveau.pk}}" cps="{{niveau.item.cps|format_nb}}" prix="{{niveau.item.prix|mul:niveau.niveau}}" niv="{{niveau.niveau}}" style=" height:75px;">
+            <div class="col-md-3">
+                <img style="max-width:100%; margin-top:20%;z-index:-1" src="/media/{{niveau.item.image}}">
+            </div>
+            <div class="col-md-9 text_item" >
+                {{niveau.item.name}} <br> Prix : <span class="prix__">{{niveau.item.prix|mul:niveau.niveau}}</span> <br> Niveau : <span class="lvl">{{niveau.niveau}}</span>
+            </div>
+        </div>
+
+        {%endfor%}
+
+        <span id="first" pk="{{first_pk}}" cps="{{first.cps}}" prix="{{first.prix}}" niv="{{first_niveau}}" style="color:#FFF;"></span>
+    </div>
+</div>
+
+<span id="total" nb="{{user.nombre_cookie}}" cps="{{cps}}"></span>
+<span id="csrf" csrf="{{csrf_token}}"></span>
+
+{%for elt in user.items.all%}
+{%for image in elt.item.image_niveau.all%}
+<span class="canvas_img_{{elt.pk}}" src="/media/{{image.image}}"></span>
+{%endfor%}
+{%endfor%}
+{%endblock%}
+
+{%block script%}
+<script>
+
+    $(document).ready(function(){
+        page = [$("#clicker"), $("#aventure"), $("#achievment") ];
+        page.forEach(function(elt){elt.height($(window).height());});
+        $image = $("#image-clicker");
+        offsetx = page[0].outerWidth()/2 - $image.outerWidth()/2;
+        offsety = page[0].outerHeight()/2 - $image.outerHeight();
+
+        $image.css("transform", "translate(" + offsetx + "px, " + offsety + "px)");
+
+        $("#aventure").css("overflow-x", "scroll");
+
+        $("canvas").height($("canvas").height()/2);
+        
+
+    });
+
+
+
+</script>
+<script src="{% static 'js/Jeu.js' %}"></script>
+{%endblock%}

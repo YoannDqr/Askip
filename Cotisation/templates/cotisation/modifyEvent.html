@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load cotisant_tags tags static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/modifyEvent.css' %}" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.16/datatables.min.css"/>
+{% endblock %}
+
+{% block script %}
+    <script src="{%static 'js/modifyEvent.js'%}"></script>
+{% endblock %}
+
+{%block header%}
+</div>
+<div class="container-fluid">
+    {% include "header.html"%}
+{%endblock%}
+{% block content %}
+    </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <form id="event-form" action="" method="post"  enctype="multipart/form-data" style="display:none;">
+                {%  csrf_token %}
+                <input type="file" name="event_picture">
+            </form>
+            <div id="photo-event" class="container-fluid" style='background-image:url("/media/{{ evenement.photo }}")'>
+                    <h1> {% autoescape off %}{{ evenement.nom }}{% endautoescape %} </h1>
+            </div>
+        </div>
+
+        <div class="row" id="content-event">
+            <div class="container">
+
+                <div class="row">
+                    <table class="table table-stripped">
+                        <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Description</th>
+                            <th>Prix</th>
+                            <th>Date de début</th>
+                            <th>Date de fin</th>
+                            <th>Nombre de participant</th>
+                            <th>Nombre de place</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>{{evenement.nom}}</th>
+                            <th>{{evenement.description}}</th>
+                            <th>{{evenement.prix}}</th>
+                            <th>{{evenement.startDate}}</th>
+                            <th>{{evenement.endDate}}</th>
+                            <th>{{evenement|nombre_participant}}</th>
+                            <th>{{evenement.nombre_place}}</th>
+
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="row">
+                    <center>
+                        <h1> Description </h1>
+                        <hr style="width:70%;">
+                    </center>
+                </div>
+
+                <div class="row content">
+                    <div class="container-fluid">
+                        {% for description in descriptions %}
+
+                            <div class="row description" pk="{{ description.pk_row }}">
+                                <div class="delete-row" support-delete="false" pk="{{ description.pk_row }}">
+                                    <img style="max-width:100%;" src="{% static 'img/delete.png' %}"/>
+                                </div>
+
+                                <div class="delete-row settings-icon"  pk="{{ description.pk_row }}" support-delete="false">
+                                    <img style="max-width:100%;" src="{% static 'img/settings.png' %}" />
+                                </div>
+                                {% for content in description.content %}
+                                    {% if description|fusion_constraint:content%}
+                                    <div class='col-md-{%  if description.fusion %}{{ description.taille_fusion }}{% else %}4{% endif %}
+                                                content-description'
+                                                {%  if description.fusion == False%}
+                                                pk="{{ description.pk_row }}"
+                                                {% endif %}>
+
+                                        {% include 'cotisation/modifyDescriptionEvent.html' %}
+
+                                        {% if content.image %}
+                                        <img class="img-description" src="/media/{{ content.image }}" />
+                                        {% endif %}
+                                        {% if content.text %}
+                                        <p class="text-description"
+                                            style="font-size:{{ content.fontsize }}px;
+                                                    text-align:{{ content.fontalign }};
+                                                    padding-top:{{ content.padding_top }}px;
+                                                    padding-bottom:{{ content.padding_bottom }}px;
+                                                    padding-left:{{ content.padding_left }}px;
+                                                    padding-right:{{ content.padding_right }}pxf;"
+                                        >
+                                            {% autoescape off %}{{ content.text }}{% endautoescape %}</p>
+                                        {% endif %}
+
+                                    </div>
+
+                                    {% include 'cotisation/modifyDescriptionEventModal.html' %}
+
+                                    {% endif %}
+                                {% endfor %}
+
+
+                            </div>
+
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="row" id="content-container">
+                    {% for elt in "012" %}
+                    <div class="col-md-3 add-content {% if elt != "0" %} col-md-offset-1 {% endif %}">
+                        <img class="add-logo"
+                             id="add-logo-{{ elt }}"
+                             src="{% static 'img/add-button.png' %}"
+                             alt="Ajouter un champ text"
+
+                             data-toggle="modal"
+                             data-target="#modal-add-content"
+                        >
+                    </div>
+                    {% endfor %}
+
+                    <div id="modal-add-content" class="modal fade" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <center><h4 class="modal-title">Ajouter du contenu</h4></center>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                <form id="add-content-form" action="" enctype="multipart/form-data" method="post">
+
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="evenement_content" value="{{ evenement.pk }}">
+                                                    <div class="form-group">
+                                                        <select class="form-control" name="taille_zone">
+                                                            <option value="NC">Taille de la zone</option>
+                                                            <option value="1">1 case</option>
+                                                            <option value="2">2 cases</option>
+                                                            <option value="3">3 cases</option>
+                                                        </select>
+                                                    </div>
+
+                                                </form>
+                                                <div id="button"></div>
+                                            </div>
+                                            <div class="col-md-4 col-md-offset-1">
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <span id="csrf_token" style="display:none;">{{ csrf_token }}</span>
+
+{% endblock %}

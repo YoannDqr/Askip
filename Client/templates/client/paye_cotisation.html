@@ -1,0 +1,46 @@
+{%extends 'base.html'%} 
+{%load static%} 
+ 
+{%block css%}
+<link rel="stylesheet" href="{% static 'css/client.css' %}" />
+{%endblock%}
+ 
+{%block script%}
+{%endblock%} 
+ 
+{%block header%}
+    {% include "header.html" with active_tab="MonCompte"%}
+{%endblock%}
+
+{%block content%}
+
+<div class="row">
+    <table class="table table-striped">
+        <tr>
+            <th>Association</th>
+            <th>Prix</th>
+            <th>Postes Candidatés</th>
+        </tr>
+        {%for association in associations%}
+        <tr>
+            <th>{{association.nom}}</th>
+            <th>{{association.prix_cotisation}}</th>
+            <th>
+                {%for poste in poste_candidat%}
+                {%if poste.association.pk == association.pk%}
+                {{poste.intitule}}<br>
+                {%endif%}
+                {%endfor%}
+            </th>
+        </tr>
+        {%endfor%}
+        <tr>
+            <th></th>
+            <th></th>
+            <th><strong>Total à payer : </strong>{{prix_total}}</th>
+        </tr>
+    </table>
+</div>
+
+
+{%endblock%}

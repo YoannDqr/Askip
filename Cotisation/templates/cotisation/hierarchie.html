@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load cotisant_tags static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/cotisation.css' %}" />
+<link rel="stylesheet" href="{% static 'css/jquery.orgchart.css' %}" />
+{% endblock %}
+
+{%block header%}
+    {% include "header.html" with active_tab="Associatif"%}
+{%endblock%}
+
+{% block content %}
+</div>
+<div class="container-fluid" style="padding-bottom:100px;">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12" id="organigramme">
+            <div id="orgChart"></div>
+        </div>
+        {%for elt in poste%}
+        <div class="col-md-3 col-md-offset-1 node_description {{elt.pk}}" style="display:none;">
+            <div class="row" style="padding-bottom:20px;">
+                <center>
+                    <form method="post" action="">
+                        {%csrf_token%}
+                        <input type="hidden" name="del_node" value="{{elt.pk}}">
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                    </form>
+                    <h3 style="text-decoration:underline;">{{elt.titre}}</h3>
+                </center>
+            </div>
+            {%if elt.ca%}
+            <div class="row" style="padding-bottom:20px;"><center><strong>Poste membre du CA</strong></center></div>
+            {%endif%}
+            {%for user in elt.personne.all%}
+            <div class="row" style="padding-bottom:75px;">
+                <center>
+                    <img class="circle" src="/media/{{user.photo}}" alt="Photo de {{user.fisrt_name}} {{user.last_name}}">
+                </center>
+            </div>
+            <div class="row">
+                <p style="padding-left:30px;">
+                    Nom : {{user.last_name}} <br>
+                    Prénom : {{user.first_name}} <br>
+                    Adresse : {{user.adresse}} <br>
+                </p>
+            </div>
+            <hr>
+            {%endfor%}
+            <div class="row">
+                <center>
+                    <form method="post" action="" style="padding-left:30px;">
+                        {%csrf_token%}
+                        <div class="form-group">
+                            <input type="hidden" name="add_son" value="{{elt.pk}}">
+                            <select class="form-control"  name="son">
+                                {%for son in poste%}
+                                {%if not son.pk in already_use%}
+                                <option value="{{son.pk}}">{{son.titre}}</option>
+                                {%endif%}
+                                {%endfor%}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-default">Ajouter un fils</button>
+                        </div>
+                    </form>
+                </center>
+            </div>
+        </div>
+        {%endfor%}
+    </div>
+</div>
+
+{%endblock%}
+
+{%block script%}
+<script src="{%static 'js/jquery.orgchart.js'%}"></script>
+<script>
+    $(document).ready(function(){
+        $("#content").css("min-height","0px");
+        var testData = [
+            {%for elt in data%}
+            {
+                id: {{elt.id}}, name: "{%autoescape off%}{{elt.name}}{%endautoescape%}", parent: {{elt.parent}}
+            },
+            {%endfor%}
+        ];
+
+        org_chart = $('#orgChart').orgChart({
+            data: testData, // your data
+            showControls: false, // display add or remove node button.
+            allowEdit: false, // click the node's title to edit
+            onAddNode: function(node){},
+            onDeleteNode: function(node){},
+            onClickNode: function(node){},
+            newNodeText: 'Add Child' // text of add button
+        });
+        $(".node").click(function(){
+            $("#organigramme").attr('class', 'col-md-8');
+            node_clicked = $(this).attr('node-id');
+            $(".node_description").css('display', 'none');
+            $(".node_description." + node_clicked).css('display', 'block');
+        });
+    });
+    
+</script>
+{%endblock%}

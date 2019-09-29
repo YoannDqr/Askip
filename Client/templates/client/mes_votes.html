@@ -1,0 +1,92 @@
+{%extends 'base.html'%} 
+{%load static client_tags%} 
+ 
+{%block css%}
+<link rel="stylesheet" href="{% static 'css/client.css' %}" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+{%endblock%}
+ 
+{%block script%}
+<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+
+<script>
+    listeGraphique = []
+    function graphique(){
+        $('#resultat').slideToggle('fast');
+        {%for vote in votes_finis%}
+        if(listeGraphique.indexOf("{{vote.pk}}") < 0){
+            listeGraphique.push("{{vote.pk}}");
+            new Morris.Donut({
+                element: 'vote_{{vote.pk}}',
+                data: [
+                    {%for reponse in vote.reponse.all%}
+                    { label: '{{reponse.reponse}}', value: {{reponse.nb_reponse}} },
+                    {%endfor%}
+                ],
+                formatter:function (y, data) { if({{vote|nombre_reponse}}!=0) return  Math.floor(y*100/{{vote|nombre_reponse}}) + "%"; else return "0%";},
+                resize:true,
+            });
+        }
+        
+        {%endfor%}
+    }
+</script>
+{%endblock%} 
+ 
+{%block header%}
+    {% include "header.html" with active_tab="MonCompte"%}
+{%endblock%}
+
+{%block content%}
+
+<div class="row">
+    <form action="" method="post">
+        {%csrf_token%}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Association</th>
+                    <th>Question</th>
+                    <th>Reponse</th>
+                    <th>Voter</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for vote in votes%}
+                <tr>
+                    <th>{{vote.association.nom}}</th>
+                    <th>{{vote.question}}</th>
+                    <th>
+                        <select class="form-control" name="vote_{{vote.pk}}">
+                            <option value="NULL">Selectionner une réponse</option>
+                            {%for reponse in vote.reponse.all%}
+                            <option value="{{reponse.pk}}">{{reponse.reponse}}</option>
+                            {%endfor%}
+                        </select>   
+                    </th>
+                    <th><button type="submit" class="btn btn-danger">Voter</button></th>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </form>
+</div>
+<div class="row" style="padding-top:50px;">
+    <div class="container">
+        <div class="row" style="padding-bottom:50px;"><center><button onclick="graphique()" class="btn btn-primary">Afficher les résultats des votes</button></center></div>
+        <div class="row" id="resultat" style="display:none;">
+            {%for vote in votes_finis%}
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <center>
+                    <strong>{{vote.question}}</strong>
+                    <div id="vote_{{vote.pk}}" style="height: 250px;"></div>
+                </center>
+                
+            </div>
+            {%endfor%}
+        </div>
+    </div>
+</div>
+
+{%endblock%}

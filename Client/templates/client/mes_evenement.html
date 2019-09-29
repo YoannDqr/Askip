@@ -1,0 +1,128 @@
+{%extends 'base.html'%} 
+{%load static client_tags%}
+ 
+{%block css%}
+<link rel="stylesheet" href="{% static 'css/client.css' %}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css" />
+{%endblock%}
+ 
+{%block script%}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#calendar').fullCalendar({
+            navLinks: true,
+            header: {
+                left: 'prev,next today',
+                center: 'title, addEvent',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            validRange: {
+                start: new Date(),
+            },
+            events: [{%for event in evenements%}
+                        {
+                            className: 'pk{{event.pk}}',
+                            title: '{{event.association.nom}} - {{event.nom}}',
+                            start: '{{event.startDate|date:"Y-m-d"}}T{{event.startDate|date:"H:i"}}',
+                            end: '{{event.endDate|date:"Y-m-d"}}T{{event.endDate|date:"H:i"}}',
+                            {%if user in event.participant.all%}
+                            color:'#845e5e',
+                            {%endif%}
+                            
+                        },
+                        
+                    {%endfor%}
+                        
+                    ],
+        });
+    });
+
+
+</script>
+{%endblock%} 
+ 
+{%block header%}
+    {% include "header.html" with active_tab="MonCompte"%}
+{%endblock%}
+
+{%block content%}
+
+<div class="row">
+    <form method="post" action="{%url 'client.paye_evenement'%}">
+        {%csrf_token%}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Association</th>
+                    <th>Evenement</th>
+                    <th>Date de début</th>
+                    <th>Date de fin</th>
+                    <th>Prix</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for event in evenements%}
+                <tr>
+                    <th><a href="{% url 'client.evenement' event=event.pk %}">{{event.association.nom}}</a></th>
+                    <th><input type="checkbox" name="event_{{event.pk}}" value="{{event.pk}}" style="margin-right:20px;" {%if user in event.participant.all %}checked{%endif%}>{{event.nom}}</th>
+                    <th>{{event.startDate}}</th>
+                    <th>{{event.endDate}}</th>
+                    <th>{{event.prix}}</th>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+        <center><button type="submit" class="btn btn-default">Modifier</button> <button type="submit" class="btn btn-default">Payer</button></center>
+    </form>
+</div>
+<div class="row content">
+    <div class="container-fluid">
+        {% for description in descriptions %}
+
+            <div class="row description" pk="{{ description.pk_row }}">
+                {% for content in description.content %}
+                    {% if description|fusion_constraint:content%}
+                    <div class='col-md-{%  if description.fusion %}{{ description.taille_fusion }}{% else %}4{% endif %}
+                                content-description'
+                                {%  if description.fusion == False%}
+                                pk="{{ description.pk_row }}"
+                                {% endif %}>
+
+                        {% include 'cotisation/modifyDescriptionEvent.html' %}
+
+                        {% if content.image %}
+                        <img class="img-description" src="/media/{{ content.image }}" />
+                        {% endif %}
+                        {% if content.text %}
+                        <p class="text-description"
+                            style="font-size:{{ content.fontsize }}px;
+                                    text-align:{{ content.fontalign }};
+                                    padding-top:{{ content.padding_top }}px;
+                                    padding-bottom:{{ content.padding_bottom }}px;
+                                    padding-left:{{ content.padding_left }}px;
+                                    padding-right:{{ content.padding_right }}pxf;"
+                        >
+                            {% autoescape off %}{{ content.text }}{% endautoescape %}</p>
+                        {% endif %}
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+
+            </div>
+
+        {% endfor %}
+    </div>
+</div>
+
+<div class="row" style="padding-top:25px;">
+    <center><button class="btn btn-primary" onclick="$('#row-calendar').slideToggle();">Afficher le planning</button></center>
+</div>
+
+<div class="row" id="row-calendar" style="padding-top:60px; display:none;">
+    <div id="calendar"></div>
+</div>
+{%endblock%}

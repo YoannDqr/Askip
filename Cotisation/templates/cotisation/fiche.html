@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{%block content%}
+<div class="container">
+    <center>
+    <div class="col-md-6">
+        <div class="row">
+            
+                <img style="width:100px;" src="/media/{{cotisant.association.logo}}" alt="Logo de l'association"/>
+                <h4>Fiche de cotisation de l'association {{cotisant.association.nom}}</h4>
+            
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <p>Nom : {{cotisant.personne.last_name}}</p>
+                <p>Prenom : {{cotisant.personne.first_name}}</p>
+                <p>Né le : {{cotisant.personne.date_naissance}}</p>
+                <p>Adresse : {{cotisant.personne.adresse}}</p>
+            </div>
+        </div>
+        <br><br>
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                Fait le {{date}} à Gardanne
+                <div class="col-md-6">
+                    <strong>Signature de l'adhérent</strong>
+                    <strong>Signature du trésorier</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    </center>
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<div class="container">
+    <center>
+    <div class="col-md-6">
+        <div class="row">
+            
+                <img style="width:100px;" src="/media/{{cotisant.association.logo}}" alt="Logo de l'association"/>
+                <h4>Fiche de cotisation de l'association {{cotisant.association.nom}}</h4>
+            
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <p>Nom : {{cotisant.personne.last_name}}</p>
+                <p>Prenom : {{cotisant.personne.first_name}}</p>
+                <p>Né le : {{cotisant.personne.date_naissance}}</p>
+                <p>Adresse : {{cotisant.personne.adresse}}</p>
+            </div>
+        </div>
+        <br><br>
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                Fait le {{date}} à Gardanne
+                <div class="col-md-6">
+                    <strong>Signature de l'adhérent</strong>
+                    <strong>Signature du trésorier</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    </center>
+</div>
+
+{%endblock%}

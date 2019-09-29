@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load cotisant_tags tags static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/cotisation.css' %}" />
+
+{% endblock %}
+
+{%block header%}
+</div>
+<div class="container-fluid">
+    {% include "header.html"%}
+{%endblock%}
+{% block content %}
+{%if Erreur == True%}
+<div class="alert alert-warning">
+    <strong>Warning!</strong> {{erreur}}
+</div>
+{%endif%}
+<div class="row">
+    <table style="width:100%;" class="table table-striped">
+        <tr>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Poste</th>
+            <th>Stade</th>
+        </tr>
+       
+        <tr>
+            <th>{{cotisant.personne.last_name}}</th>
+            <th>{{cotisant.personne.first_name}}</th>
+            <th><a data-toggle="modal" data-target="#poste">{{cotisant|poste}}</a></th>
+            <th>{{cotisant.stade}}</th>
+        </tr>
+
+    </table>
+
+
+    <div id="poste" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <center>
+                        <h4 class="modal-title">Nouveau Poste</h4>
+                    </center>
+                </div>
+                <div class="modal-body">
+                    <form method="POST">
+                        {%csrf_token%}
+                        <div class="form-group">
+                            <label for="email">Poste</label>
+                            <select name="poste" class="form-control" id="poste">
+                                <option value="-1">Nouveau</option>
+                                {%for poste in postes%}
+                                <option value="{{poste.pk}}">{{poste.titre}}</option>
+                                {%endfor%}
+                                <option value="NC">NC</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="titre_form" style="display:none;">
+                            <label for="titre">Nom du poste</label>
+                            <input type="text" class="form-control" max_length="100" id="titre" name="titre"/>
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">Valider</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" id="commande">
+    <div class="col-md-4 col-sm-4 col-xs-4">
+        <center>
+            <a href="{%url 'cotisation.reset' cotisant=cotisant.pk association=cotisant.association.nom %}">
+                <button class="btn btn-primary">Reset</button>
+            </a>
+        </center>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-4">
+        <center>
+            <a onclick="$('#a').fadeIn('fast');"href="{%url 'cotisation.paye' cotisant=cotisant.pk association=cotisant.association.nom %}">
+                <button class="btn btn-primary">Payer</button>
+            </a>
+        </center>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-4">
+        <center>
+            <a href="{%url 'cotisation.generation' cotisant=cotisant.pk association=cotisant.association.nom %}">
+                <button class="btn btn-primary">Générer la fiche de cotisation</button>
+            </a>
+        </center>
+    </div>
+</div>
+{%endblock%}
+
+{%block script%}
+
+<script>
+    $(document).ready(function(){
+        $("select#poste").change(function(){
+            if(this.value == "-1"){
+                $("#titre_form").fadeIn("quick");
+            }
+            else{
+                $("#titre_form").fadeOut("quick");
+            }
+        });
+    });
+</script>
+
+{%endblock%}

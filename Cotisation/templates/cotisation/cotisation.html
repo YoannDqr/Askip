@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load tags static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/cotisation.css' %}" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.16/datatables.min.css"/>
+<link rel="stylesheet" href="{% static 'css/client.css' %}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css" />
+
+{% endblock %}
+
+{%block header%}
+    {% include "header.html" with active_tab="Associatif"%}
+{%endblock%}
+{% block content %}
+
+<div class="row">
+    <form id="asso_picture" style="display:none;" action="" method="POST"  enctype="multipart/form-data">
+        {%csrf_token%}
+        <input id="new_picture" type="file" name="new_picture">
+    </form>
+    <center>
+        <img class="logo" style="max-width:300px;" src="/media/{{association.logo}}" onclick="$('input#new_picture').click();" alt="logo de l'association {{association.nom}}"/>
+    </center>
+</div>
+<div class="row" style="padding-top:50px;padding-bottom:50px;">
+    <div class="col-md-3 col-sm-12 col-xs-12">
+        <center>
+            <button class="btn btn-primary" style="width:150px;" onclick="$('.module').slideUp('fast');$('#cotisant').slideToggle('fast');">Cotisant</button>
+        </center>
+    </div>
+    {%if association.module_tresorerie%}
+    <div class="col-md-3 col-sm-12 col-xs-12">
+        <center>
+            <button class="btn btn-primary" style="width:150px;" onclick="$('.module').slideUp('fast');$('#tresorerie').slideToggle('fast');">Trésorerie</button>
+        </center>
+    </div>
+    {%endif%}
+    {%if association.module_club%}
+    <div class="col-md-3 col-sm-12 col-xs-12">
+        <center>
+            <button class="btn btn-primary" style="width:150px;" onclick="$('.module').slideUp('fast');$('#club').slideToggle('fast');">Club</button>
+        </center>
+    </div>
+    {%endif%}
+    {%if association.module_vote%}
+    <div class="col-md-3 col-sm-12 col-xs-12">
+        <center>
+            <button class="btn btn-primary" style="width:150px;" onclick="$('.module').slideUp('fast');$('#votes').slideToggle('fast');">Votes</button>
+        </center>
+    </div>
+    {%endif%}
+    <div class="col-md-3 col-sm-12 col-xs-12">
+        <center>
+            <button class="btn btn-primary" style="width:150px;" onclick="$('.module').slideUp('fast');$('#postes').slideToggle('fast');">Poste</button>
+        </center>
+    </div>
+    {%if association.module_evenement%}
+    <div class="col-md-3 col-sm-12 col-xs-12">
+        <center>
+            <button class="btn btn-primary" style="width:150px;" onclick="$('.module').slideUp('fast');$('#event').slideToggle('fast');">Evenement</button>
+        </center>
+    </div>
+    {%endif%}
+    {%if association.module_vente%}
+    <div class="col-md-3 col-sm-12 col-xs-12">
+        <center>
+            <a href="{%url 'comif.index'%}"><button class="btn btn-primary" style="width:150px;">Vente</button></a>
+        </center>
+    </div>
+    {%endif%}
+</div>
+<div class="row">
+    <div class="col-md-3 col-sm-12 col-xs-12">
+        <center>
+            <button class="btn btn-primary" style="width:150px;" data-toggle="modal" data-target="#parametre">Parametre</button>
+        </center>
+    </div>
+    <div class="col-md-3 col-sm-12 col-xs-12">
+        <center>
+            <a href="{%url 'cotisation.checkout'%}"><button class="btn btn-primary" style="width:150px;">Se déconnecter</button>
+        </center>
+    </div>
+</div>
+{% include 'cotisation/cotisant.html' %}
+{% if association.module_tresorerie %}
+    {% if user_treso %}
+        {% include 'cotisation/tresorerie.html' %}
+    {% endif %}
+{% endif %}
+
+{% if association.module_club %}
+  {% include 'cotisation/club.html' %}
+{% endif %}
+
+{% if association.module_vote %}
+  {% include 'cotisation/vote.html' %}
+{% endif %}
+
+
+{% include 'cotisation/poste.html' %}
+
+{% if association.module_evenement %}
+  {% include 'cotisation/event.html' %}
+{% endif %}
+
+{% if user_mdp %}
+    {% include 'cotisation/parametre.html' %}
+{% endif %}
+
+
+<div class="row" style="padding-top:50px;">
+    <div class="container">
+        <center>
+        <a href="{%url 'cotisation.hierarchie' association=association.nom%}"><button style="width:90.5%;" class="btn btn-primary">Organigramme</button></a>
+        </center>
+    </div>
+</div>
+
+<!--<div class="row">
+    <div style="overflow:hidden;">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-8">
+                    <div id="datetimepicker12"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>-->
+<span id="csrf_token" style="display:none">{{csrf_token}}</span>
+{%endblock%}
+
+{%block script%}
+<script src="{%static 'js/cotisation.js'%}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/b-html5-1.5.1/datatables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+
+<script>
+    function addTresorier(){
+        nb_tresorier = $("select.tresorier").length;
+        html = '<div class="col-md-6 col-sm-6 col-xs-12">\
+                    <label for="" class="form-label tresorier">Gestion tésorerie</label>\
+                    <select class="form-control tresorier" name="gestion_treso_'+nb_tresorier+'">\
+                        {%for poste in association.poste_set.all%}\
+                        <option value="{{poste.pk}}">{{poste.titre}}</option>\
+                        {%endfor%}\
+                    </select>\
+                </div>';
+        $("div#tresorier").append(html);
+    }
+
+    function addMdp(){
+        nb_mdp = $("select.mdp").length;
+        html='\
+            <div class="col-md-6 col-sm-6 col-xs-12">\
+                <label for="" class="form-label gestion_mdp">Gestion mot de passe</label>\
+                <select class="form-control mdp" name="gestion_mdp_'+nb_mdp+'">\
+                    {%for poste in association.poste_set.all%}\
+                    <option value="{{poste.pk}}">{{poste.titre}}</option>\
+                    {%endfor%}\
+                </select>\
+            </div>'
+        $("div#mdp").append(html);
+    }
+
+    function delTreso(){
+        nb_treso = $("select.deltreso").length;
+        html='\
+            <div class="col-md-6 col-sm-6 col-xs-12">\
+                <label for="" class="form-label supprime_treso">Enlever droit trésorerie</label>\
+                <select class="form-control deltreso" name="supprimer_droit_treso_'+nb_treso+'">\
+                    {%for poste in association.gestionnaire_tresorerie.all%}\
+                    <option value="{{poste.pk}}">{{poste.titre}}</option>\
+                    {%endfor%}\
+                </select>\
+            </div>';
+        $("div#deltreso").append(html);
+    }
+
+    function delMdp(){
+        nb_treso = $("select.delmdp").length;
+        html='\
+            <div class="col-md-6 col-sm-6 col-xs-12">\
+                <label for="" class="form-label supprime_treso">Enlever droit mdp</label>\
+                <select class="form-control delmdp" name="supprimer_droit_mdp_'+nb_treso+'">\
+                    {%for poste in association.gestionnaire_mdp.all%}\
+                    <option value="{{poste.pk}}">{{poste.titre}}</option>\
+                    {%endfor%}\
+                </select>\
+            </div>';
+        $("div#delmdp").append(html);
+    }
+
+    $(document).ready(function(){
+        $('#calendar').fullCalendar({
+            navLinks: true,
+            customButtons: {
+                addEvent: {
+                    text: 'Nouvel évenement',
+                    click: function() {
+                        $("#newEvent").click();
+                    }
+                },
+            },
+            header: {
+                left: 'prev,next today',
+                center: 'title, addEvent',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            validRange: {
+                start: new Date(),
+            },
+            events: [{%for event in association.evenement.all%}
+                        {
+                            className: '_privatekey{{event.pk}}_',
+                            title: '{%if event.startDate|date:"H:i" == event.endDate|date:"H:i"%}{{event.startDate|date:"H:i"}}-{%endif%}{{event.association.nom}} - {{event.nom}}',
+                            start: '{{event.startDate|date:"Y-m-d"}}{%if event.startDate|date:"H:i" != event.endDate|date:"H:i"%}T{{event.startDate|date:"H:i"}}{%endif%}',
+                            end: '{{event.endDate|date:"Y-m-d"}}{%if event.startDate|date:"H:i" != event.endDate|date:"H:i"%}T{{event.endDate|date:"H:i"}}{%endif%}',
+                        },
+                    {%endfor%}
+                    {%for event in events%}
+                    {%if not event in association.evenement.all%}
+                    {
+                        className: '_privatekey{{event.pk}}_',
+                        title: '{{event.association.nom}} - {{event.nom}}',
+                        start: '{{event.startDate|date:"Y-m-d"}}T{{event.startDate|date:"H:i"}}',
+                        end: '{{event.endDate|date:"Y-m-d"}}T{{event.endDate|date:"H:i"}}',
+                        color:'#ff0000'
+                    },  
+                    {%endif%}
+                    {%endfor%}                  
+
+                        
+                    ],
+            editable:true,
+            eventDrop:dropAjax,
+            eventResize:dropAjax,
+                    
+        });
+    });
+</script>
+
+{%endblock%}

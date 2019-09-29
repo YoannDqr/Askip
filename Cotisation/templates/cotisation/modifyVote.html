@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load cotisant_tags tags static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/cotisation.css' %}" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+
+{% endblock %}
+
+{%block header%}
+    {% include "header.html"%}
+{%endblock%}
+{% block content %}
+<div class="row">
+    <table class="table-striped table">
+        <thead>   
+            <tr>
+                <th>Question</th>
+                <th>Date de début</th>
+                <th>Date De fin</th>
+                <th>Porté du vote</th>
+                <th>Nombre de réponses</th>
+                <th>Quorum</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>{{vote.question}}</th>
+                <th>{{vote.startDate|date:"d M Y H:i"}}</th>
+                <th>{{vote.endDate|date:"d M Y H:i"}}</th>
+                <th>{{vote|accessibility}}</th>
+                <th>{{vote|nombre_reponse}}</th>
+                <th><input type="checkbox" {%if vote|quorum%}checked{%endif%} onclick="return false;"></th>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="row" style="padding-top:50px;">
+    <div class="container">
+        <div class="row">
+            <div id="myfirstchart" style="height: 250px;"></div>
+        </div>
+        <div class="row">
+            <center>
+                <table class="table table-striped">
+                    <thead>
+                        <tr><th>Personne ayant participé</th></tr>
+                    </thead>
+                    <tbody>
+                        {%for user in vote.user_answered.all%}
+                        <tr><th><strong>{{user.first_name}} {{user.last_name}}</strong></th></tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </center>
+        </div>
+    </div>
+    
+</div>
+
+    
+{%endblock%}
+
+{%block script%}
+<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+
+<script>
+    new Morris.Donut({
+        element: 'myfirstchart',
+        data: [
+            {%for reponse in vote.reponse.all%}
+            { label: '{{reponse.reponse}}', value: {{reponse.nb_reponse}} },
+            {%endfor%}
+        ],
+        formatter:function (y, data) { if({{vote|nombre_reponse}}!=0) return  Math.floor(y*100/{{vote|nombre_reponse}}) + "%"; else return "0%";},
+        resize:true,
+});
+</script>
+{%endblock%}

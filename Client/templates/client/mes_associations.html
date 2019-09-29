@@ -1,0 +1,161 @@
+{%extends 'base.html'%} 
+{%load static%} 
+ 
+{%block css%}
+<link rel="stylesheet" href="{% static 'css/client.css' %}" />
+{%endblock%}
+ 
+{%block script%}
+
+<script>
+    $(document).ready(function(){
+        $("#panelControl").height($(window).height()/2);
+    });
+
+    function fillAsso(asso_id){
+        $(".full_description").css("display","none");
+        $("."+asso_id+"_description.full_description").css("display","block");
+        $("."+asso_id).slideToggle('fast');
+    }
+</script>
+
+{%endblock%} 
+ 
+{%block header%}
+    {% include "header.html" with active_tab="MonCompte"%}
+{%endblock%}
+
+{%block content%}
+<div class="row" id="controlPanelMobile">
+    <div class="container-fluid">
+        <div class="row">
+            <center><button class="btn btn-primary" onclick="$('#panel').slideToggle('fast');" style="width:100%;">Afficher les associations</button></center>
+        </div>
+        <div class="row" id="panel" style="padding-top:60px; display:none;">
+            <form action="{%url 'client.paye_cotisation'%}" method="POST">
+                {%csrf_token%}
+                <input type="hidden" name="choix_asso" value="choix_asso">
+                {%for association in associations%}
+                <div class="row" onclick="fillAsso('asso_{{association.pk}}');">
+                    <div class="form-group">
+                        <input type="checkbox" {%if association in user_association%} checked {%endif%} name="association_{{association.pk}}" value="{{association.pk}}">
+                        <label class="form-label association">{{association.nom}}</label>
+                        <img style="max-width:50px;" src="/media/{{association.logo}}" alt="logo de l'association {{association.nom}}">
+                    </div>
+                </div>
+                <div class="row description asso_{{association.pk}}" {%if association != association_visible %}style="display:none"{%endif%} >
+                    {%for poste in association.poste_set.all%}
+                        <div class="form-group">
+                            <input type="checkbox" {%if poste.pk in user_poste or user in poste.candidat.all%} checked {%endif%} name="poste_{{association.pk}}{{poste.pk}}" value="{{poste.pk}}">
+                            <label class="form-label association">{{poste.titre}}  {%if poste.pk in user_poste%}<strong>(obtenue)</strong>{%elif user in poste.candidat.all%}<strong>(candidat)</strong>{%endif%}</label>
+                        </div>
+                        <hr style="border-color:#eaeaea;width:50%;"/>
+                    {%endfor%}
+                    <strong> Cotisation : {{association.prix_cotisation}}</strong>
+                </div>
+                <hr style="border-color:#000;"/>
+                {%endfor%}
+    
+                <div class="form-group" style="float:right;">
+                    <button tye="submit" class="btn btn-default">Modifier</button> <button tye="submit" class="btn btn-default">Payer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8 col-sm-12 col-xs-12 full_description">
+    </div>
+    {% if association_visible == "" %}
+    
+    <div class="col-md-8 col-sm-12 col-xs-12 full_description">
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur aliquet varius odio sit amet cursus. Pellentesque dolor nisl, porta vitae vehicula sed, porta id diam. Aliquam consectetur odio a lectus fermentum, in suscipit orci maximus. Nunc sed sagittis quam. Aenean tempus justo dolor, tincidunt vulputate ex commodo quis. Nam facilisis neque et aliquet fringilla. Aenean ut dui ex. Nam sit amet volutpat lacus, non facilisis augue. Nulla pretium dui ac sagittis congue. Fusce vel feugiat odio, ultrices commodo libero. Mauris orci ex, tristique id bibendum nec, auctor at erat.
+        </p>
+        <p>
+            Vestibulum ut urna tellus. Sed consequat mauris eget augue commodo, ut volutpat sapien laoreet. Morbi volutpat massa nulla, in dictum mauris tristique id. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut vestibulum, odio in convallis feugiat, urna mi vestibulum metus, sit amet faucibus nunc metus vel est. Aliquam placerat justo pellentesque, congue magna id, viverra leo. Aenean nibh risus, consectetur eu ultrices nec, vulputate sed turpis. In at ipsum commodo, accumsan nulla quis, viverra turpis. Nam eget nisl tristique, ullamcorper ex vel, lacinia ante. Integer sodales ex at lacus mattis, a placerat odio pellentesque. Phasellus dignissim iaculis sem eu ornare. Quisque ac posuere sem.
+        </p>
+        <p>
+            Integer scelerisque finibus mauris quis rutrum. Fusce finibus libero sit amet sapien finibus maximus. Phasellus maximus, quam ac finibus auctor, tellus augue auctor leo, in vehicula ante diam vel eros. Proin dictum sit amet mi quis facilisis. Phasellus varius libero non ex tristique porta. In aliquam nunc mauris, nec semper eros convallis ac. Cras laoreet sapien mi. Etiam mattis dictum ex, ac ullamcorper ex rutrum non. Vestibulum est massa, porta sit amet neque nec, rhoncus tempus libero. Proin scelerisque ornare ullamcorper. Duis sed mi id urna laoreet volutpat vel condimentum purus. Donec justo risus, finibus at viverra quis, aliquet eu ipsum.
+        </p>
+        <p>
+            Nam dignissim dapibus consectetur. Fusce sapien purus, maximus ut efficitur id, eleifend nec nulla. In lacus mauris, facilisis in nisi accumsan, pellentesque efficitur mi. In volutpat ipsum vel tellus laoreet, id condimentum diam placerat. In ligula purus, pharetra mattis odio id, malesuada maximus metus. Nam dolor ante, luctus et massa a, dignissim malesuada leo. Phasellus vestibulum nec nisl eu maximus. Cras ultricies tempor massa. Maecenas at est eu urna elementum blandit vitae nec magna. Sed luctus diam quis tortor commodo dignissim. Ut aliquam velit at dignissim efficitur. Integer et vulputate sapien. Aliquam condimentum fringilla ex sed pellentesque. Etiam efficitur elit dolor, placerat varius lectus facilisis id.
+        </p>
+        <p>
+            Nullam rhoncus lorem dapibus lorem finibus, id scelerisque est facilisis. Pellentesque at dolor vitae urna egestas fringilla sed ac mauris. Integer sit amet felis euismod, interdum lacus ac, volutpat diam. Nulla massa tellus, ultrices in sem ut, aliquet convallis nunc. Sed dui sapien, faucibus nec metus non, porta egestas diam. Aenean consectetur ligula vitae lacus mattis, ut hendrerit lacus vehicula. Suspendisse elit turpis, bibendum et consequat id, accumsan at ante.
+        </p>
+    </div>
+
+
+    {% endif %}
+    {%for association in associations%}
+    <div class="col-md-8 col-sm-12 col-xs-12 asso_{{association.pk}}_description full_description" {%if association != association_visible%}style="display:none;"{%endif%}>
+        <div class="row">
+            <center>
+                <h2>{{association.nom}}</h2>
+                <img style="max-width:50%;" id="logo_asso" src="/media/{{association.logo}}" alt=""/><br>
+                <a href="{%url 'cotisation.hierarchie' association=association.nom%}"><button class="btn btn-default">Voir l'organigramme</button></a>
+            </center>
+        </div>
+        <div class="row description_asso">{{association.description}}</div>
+        <div class="row" id="poste_explanation">
+            <table class="table table-striped">
+                <tr>
+                    <th>Poste</th>
+                    <th>Description</th>
+                    <th>Responsable actuel</th>
+                </tr>
+                {%for poste in association.poste_set.all%}
+                <tr>
+                    <th>{{poste.titre}}</th>
+                    <th>{{poste.description}}</th>
+                    <th>
+                        {%for personne in poste.personne.all%}
+                        {{personne.first_name}} {{personne.last_name}}<br>
+                        {%endfor%}
+                    </th>
+                </tr>
+                {%endfor%}
+            </table>
+        </div>
+    </div>
+    {%endfor%}
+
+
+    <div class="col-md-3 col-md-offset-1" id="controlPanel">
+        <div class="assos" id="panelControl">
+            <form action="{%url 'client.paye_cotisation'%}" method="POST">
+                {%csrf_token%}
+                <input type="hidden" name="choix_asso" value="choix_asso">
+                {%for association in associations%}
+                <div class="row" onclick="fillAsso('asso_{{association.pk}}');">
+                    <div class="form-group">
+                        <input type="checkbox" {%if association in user_association%} checked {%endif%} name="association_{{association.pk}}" value="{{association.pk}}">
+                        <label class="form-label association">{{association.nom}}</label>
+                        <img style="max-width:50px;" src="/media/{{association.logo}}" alt="logo de l'association {{association.nom}}">
+                    </div>
+                </div>
+                <div class="row description asso_{{association.pk}}" {%if association != association_visible %}style="display:none"{%endif%} >
+                    {%for poste in association.poste_set.all%}
+                        <div class="form-group">
+                            <input type="checkbox" {%if poste.pk in user_poste or user in poste.candidat.all%} checked {%endif%} name="poste_{{association.pk}}{{poste.pk}}" value="{{poste.pk}}">
+                            <label class="form-label association">{{poste.titre}}  {%if poste.pk in user_poste%}<strong>(obtenue)</strong>{%elif user in poste.candidat.all%}<strong>(candidat)</strong>{%endif%}</label>
+                        </div>
+                        <hr style="border-color:#eaeaea;width:50%;"/>
+                    {%endfor%}
+                    <strong> Cotisation : {{association.prix_cotisation}}</strong>
+                </div>
+                <hr style="border-color:#000;"/>
+                {%endfor%}
+
+                <div class="form-group" style="float:right;">
+                    <button tye="submit" class="btn btn-default">Modifier</button> <button tye="submit" class="btn btn-default">Payer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    </div>
+</div>
+
+{%endblock%}

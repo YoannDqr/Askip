@@ -1,0 +1,41 @@
+{%extends 'base.html'%} 
+{%load static%} 
+ 
+{%block css%}
+<link rel="stylesheet" href="{% static 'css/client.css' %}" />
+{%endblock%}
+ 
+{%block script%}
+{%endblock%} 
+ 
+{%block header%}
+    {% include "header.html" with active_tab="MonCompte"%}
+{%endblock%}
+
+{%block content%}
+
+<div class="row">
+    <table class="table table-striped">
+        <tr>
+            <th>Association</th>
+            <th>Event</th>
+            <th>Prix</th>
+        </tr>
+        {%for event in evenements%}
+        <tr>
+            <th>{{event.association.nom}}</th>
+            <th>{{event.nom}}</th>
+            <th>
+                {{event.prix}}
+            </th>
+        </tr>
+        {%endfor%}
+        <tr>
+            <th></th>
+            <th></th>
+            <th><strong>Total à payer : </strong>{{prix_total_event}}</th>
+        </tr>
+    </table>
+</div>
+
+{%endblock%}

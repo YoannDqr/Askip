@@ -1,0 +1,101 @@
+{%extends 'base.html'%} 
+{%load static%} 
+ 
+{%block css%}
+<link rel="stylesheet" href="{% static 'css/comif.css' %}" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.16/datatables.min.css"/>
+{%endblock%} 
+ 
+{%block script%}
+<script src="{%static 'js/comif.js'%}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/b-html5-1.5.1/datatables.min.js"></script>
+
+{%endblock%} 
+
+{%block header%}
+    {% include "header.html" with active_tab="Associatif"%}
+{%endblock%}
+
+{%block content%}
+{% include "comif/navbar.html"%}
+{% if is_alerte %}
+<div class="alert alert-warning">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <p>
+        <strong>Stock faible pour les produits : </strong> 
+        {%for produit in alertes%}
+        {{produit.nom}} &nbsp;&nbsp;&nbsp;&nbsp;
+        {%endfor%}
+
+        <a href="{%url 'comif.createCommande'%}"><button class="btn btn-danger">Ajouter ces produits a la commande</button></a>
+    </p>
+</div>
+{% endif %}
+<div class="row">
+    <div class="container">
+        <div class="col-md-4 col-sm-4 col-xs-6">
+            <table class="table table-striped datatable">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Solde</th>
+                        <th>Gestion</th>
+                        <th>Supprimer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for client in clients%}
+                    <tr class="client" id="client_{{client.pk}}" {%if not client.cotisant%}style="background-color:red;color:white;"{%endif%} onclick="choose_client({{client.pk}}, '{{client.solde}}');">
+                        <th>{{client.utilisateur.first_name}} {{client.utilisateur.last_name}} {{client.first_name}} {{client.last_name}}</th>
+                        <th>{{client.solde}}</th>
+                        <th><button class="btn btn-default"  data-toggle="modal" data-target="#client_modal_{{client.pk}}">Info</button></th>
+                        <th><span onclick="delClient({{client.pk}})" class="glyphicon glyphicon-remove" aria-hidden="true"></span></th>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+        </div>
+        {%for type in types%}
+        <div id="{{type.pk}}" style="display:none;" class="type col-md-4 col-sm-4 col-xs-6 col-md-offset-2 col-sm-offset-1 col-xs-offset-1">
+            <div class="commande" style="display:none;">
+                <form action="" method="post">
+                    <input type="hidden" id="client" name="client" value="">
+                    {%csrf_token%}
+                    {%for categorie in type.categories.all%}
+                    <div class="row categorie" onclick="$('.produit').slideUp('fast'); $('#produit_{{categorie.pk}}').slideToggle('fast');"><center><strong>{{categorie.nom}}</strong></center></div>
+                    <div class="row produit" id="produit_{{categorie.pk}}" style="display:none;padding-top:20px;">
+                        {%for produit in categorie.produits.all%}
+                        {% if produit.stock > 0%}
+                        <div class="form-group" >
+                            <div style="display:inline-block" onclick="addProduit('{{produit.prix}}', {{produit.pk}});">
+                                <input type="checkbox" id="produits_{{produit.pk}}" name="produit_{{produit.pk}}" value="{{produit.pk}}" style="margin-right:20px;">
+                                <label style="display:inline-block;" class="form-label">{%if produit.image != ""%}<img style="display:inline-block; max-width:25px;margin-right:20px;" src="/media/{{produit.image}}">{%endif%}{{produit.nom}} <strong>{{produit.prix}}</strong></label>
+                            </div>
+                            <div class="btn-quantite">
+                                <span class="glyphicon glyphicon-minus" onclick="del_qte({{produit.pk}}, '{{produit.prix}}', {{produit.stock}});"></span>
+                                <input readonly style="text-align:center;" class="qte" name="qte_{{produit.pk}}" id="qte_{{produit.pk}}" type="phone" min="0" max="{{produit.stock}}" value="0"> 
+                                <span class="glyphicon glyphicon-plus" onclick="add_qte({{produit.pk}}, '{{produit.prix}}', {{produit.stock}});"></span>
+                            </div>
+                            <div class="btn-quantite"><strong>Stock : {{produit.stock}}</strong></div>
+                        </div>
+                        {%endif%}
+                        {%endfor%}
+                    </div>  
+                    <hr>
+                    {%endfor%}
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default" style="float:right;" id="submit_btn">Payer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {%endfor%}
+        {% include "comif/user_info.html"%}
+    </div>
+
+</div>
+<span style="display:none" id="csrf_token">{{csrf_token}}</span>
+
+{%endblock%} 

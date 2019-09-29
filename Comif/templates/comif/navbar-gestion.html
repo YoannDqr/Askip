@@ -1,0 +1,40 @@
+<nav class="navbar navbar-default">      
+    <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#gestion-nav" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="gestion-nav">
+            <ul class="nav navbar-nav">
+                <li class="nav-item">
+                    <a class="navbar-brand" onclick="$('.tables').css('display', 'none'); $('#type').css('display', 'block');">Gestion des types</a>
+                </li>
+                <li class="nav-item">
+                    <a class="navbar-brand" onclick="$('.tables').css('display', 'none'); $('#categorie').css('display', 'block');">Gestion des catégories</a>
+                </li>
+                <li class="nav-item">
+                    <a class="navbar-brand" onclick="$('.tables').css('display', 'none'); $('#produit').css('display', 'block');">Gestion des produits</a>
+                </li>
+                <li class="nav-item">
+                    <a class="navbar-brand" onclick="$('.tables').css('display', 'none'); $('#comptabilite').css('display', 'block');">Comptabilité</a>
+                </li>
+                <li class="nav-item">
+                    <a class="navbar-brand" onclick="$('.tables').css('display', 'none'); $('#commande').css('display', 'block');">Commande</a>
+                </li>
+                <li class="nav-item">
+                    <a class="navbar-brand" onclick="$('.tables').css('display', 'none'); $('#client').css('display', 'block');">Nouveau cotisant</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="nav-item">
+                    <a class="navbar-brand" href="{%url 'comif.index'%}">Vente</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

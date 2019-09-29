@@ -1,0 +1,231 @@
+{%extends 'base.html'%} 
+{%load static tags%} 
+ 
+{%block css%}
+<link rel="stylesheet" href="{% static 'css/comif.css' %}" />
+{%endblock%} 
+ 
+{%block script%}
+<script src="{%static 'js/gestion.js'%}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/b-html5-1.5.1/datatables.min.js"></script>
+
+{%endblock%} 
+
+{%block header%}
+    {% include "header.html" with active_tab="Associatif"%}
+{%endblock%}
+
+{%block content%}
+{% include "comif/navbar-gestion.html"%}
+<div class="row" style="padding-top:35px;"></div>
+<div class="row tables" id="type" {%if open_onglet != "type"%}style="display:none;"{%endif%}>
+    <table class="table table-striped datatableType">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Categories</th>
+                <th>Modifier</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for type in types%}
+            <tr>
+                <th>{{type.nom}}</th>
+                <th>
+                    {% for categorie in type.categories.all %}
+                    {{categorie.nom}}<br>
+                    {% endfor %}
+                </th>
+                <th><button class="btn btn-default" data-toggle="modal" data-target="#type_modal_{{type.pk}}">Modifier</button></th>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+</div>
+
+<div class="row tables" id="categorie" {%if open_onglet != "categorie"%} style="display:none;"{%endif%}>
+    <table class="table table-striped datatableCategorie">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Categories</th>
+                <th>Modifier</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for categorie in categories%}
+            <tr>
+                <th>{{categorie.nom}}</th>
+                <th>
+                    {% for produit in categorie.produits.all %}
+                    {{produit.nom}}<br>
+                    {% endfor %}
+                </th>
+                <th><button  data-toggle="modal" data-target="#categorie_modal_{{categorie.pk}}" class="btn btn-default">Modifier</button></th>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+</div>
+
+<div class="row tables" id="produit" {%if open_onglet != "produit"%} style="display:none;"{%endif%}>
+    <table class="table table-striped datatableProduit">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Nom</th>
+                <th>Prix Achat</th>
+                <th>Prix Vente</th>
+                <th>Stock</th>
+                <th>Alerte</th>
+                <th>Modifier</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for produit in produits%}
+            <tr {%if produit.alert%} style="background:red;" {%endif%}>
+                <th><img style="max-width:75px;" src="/media/{{produit.image}}"></th>
+                <th>{{produit.nom}}</th>
+                <th>{{produit.prix_achat}}</th>
+                <th>{{produit.prix}}</th>
+                <th>{{produit.stock}}</th>
+                <th>{{produit.alerte_stock}}</th>
+                <th><button data-toggle="modal" data-target="#produit_modal_{{produit.pk}}" class="btn btn-default">Modifier</button></th>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+</div>
+
+<div class="row tables" id="comptabilite" {%if open_onglet != "comptabilite" and open_onglet != ""%} style="display:none;"{%endif%}>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <strong> De </strong>
+                    <div class='input-group startDate' id='comptaStartDate'>
+                        <input type='text' class="form-control" name="startDate" required/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <strong> A : </strong>
+                </div>
+                <div class='input-group endDate' id='comptaEndDate'>
+                    <input type='text' class="form-control" id="endDate" name="endDate" required/>
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+                <div class="form-group" style="padding-top:20px;">
+                    <strong>Total de la période : <span id="prixTotal">0</span> €</strong>
+                </div>
+                
+            </div>
+            <div class="col-md-6 col-md-offset-2 col-sm-6 col-sm-offset-2 col-xs-12">
+                <table class="table table-striped datatableCompta">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Prix</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row tables" id="commande" {%if open_onglet != "commande"%} style="display:none;"{%endif%}>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <a href="{%url 'comif.createCommandeFinal'%}"><button class="btn btn-default">Nouvelle Commande</button></a>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Prix</th>
+                            <th>Supprimer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for commande in commandes%}
+                        <tr onclick="fillCompta([{%for produit in commande.produits.all%}{'pk':'{{produit.pk}}', 'nom':'{{produit.produit.nom}}', 'prix':'{{produit.produit.prix_achat}}', 'qte':'{{produit.quantite}}', 'image':'{{produit.produit.image}}'},{%endfor%}], {{commande.pk}})">
+                            <th>{{commande.date_envoie|date:"Y-m-d"}}</th>
+                            <th>{{commande.prix_total}}</th>
+                            <th><span onclick='delCommande({{commande.pk}})' class='glyphicon glyphicon-remove' aria-hidden='true'></span></th>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6 col-md-offset-2 col-sm-6 col-sm-offset-2 col-xs-12">
+                <button data-toggle="modal" id="commande_btn" style="display:none;" data-target="#gestion-commande" class="btn btn-default">Modifier</button>
+                <table id="comptaTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Prix</th>
+                            <th>Quantité</th>
+                            <th>Supprimer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row tables" id="client" {%if open_onglet != "client"%} style="display:none;"{%endif%}>
+    <div class="container">
+        <form action="{%url 'comif.gestion' onglet='client'%}" method="post">
+            <input type="hidden" name="new_user" value="1">
+            {%csrf_token%}
+            <div class="form-group">
+                <select name="user_id" class="form-control">
+                    <option value="NC" class="form-control">Utilisateur (si inscrit sur le site)</option>
+                    {%for user in clients%}
+                    <option class="form-control" value="{{user.pk}}">{{user.first_name}} {{user.last_name}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+
+            
+            {% for field in user_form %}
+            <div class="form-group">
+                <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }} {%if field.label == "First name" or field.label == "Last name" %}(si externe){%endif%}</label>
+                {%if field.label == "Cotisant"%}
+                {{field}}
+                {%else%}
+                {{field|addcss:"form-control"}}
+                {%endif%}
+            </div>
+            {%endfor%}
+
+            <div class="form-group">
+                <center><button class="btn btn-default">Valider</button></center>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% include "comif/gestion-modal-type.html" %}
+{% include "comif/gestion-modal-categorie.html" %}
+{% include "comif/gestion-modal-produit.html" %}
+{% include "comif/gestion-modal-commande.html" %}
+<span id="csrf_token" style="display:none">{{csrf_token}}</span>
+{%endblock%}

@@ -1,0 +1,82 @@
+{%for type in types%}
+<div id="type_modal_{{type.pk}}" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <center><h4 class="modal-title">Info</h4></center>
+            </div>
+            <div class="modal-body">
+                <form class="delete"action="{%url 'comif.gestion' onglet='type'%}" method="post" style="display:none;">
+                    {%csrf_token%}
+                    <input type="hidden" name="delete_type" value={{type.pk}}>
+                </form>
+                <form class="modify" action="{%url 'comif.gestion' onglet='type'%}" method="post">
+                    {%csrf_token%}
+                    <input type="hidden" name="modal_type" value="{{type.pk}}">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Nom</label>
+                                <input type="text" class="form-control" name="nom_type" value="{{type.nom}}">
+                            </div>
+                            <div class="form-group">
+                                <label>Categorie : </label><br>
+                                {%for categorie in type.categories.all%}
+                                <label style="padding-right:20px;">{{categorie.nom}}</label>
+                                <input style="margin-right:20px;" {%if categorie in type.categories.all%} checked {%endif%} name="categorie_{{categorie.pk}}" type="checkbox" value="{{categorie.pk}}">
+                                {%endfor%}
+                                {%for categorie in usableCategorie%}
+                                <label style="padding-right:20px;">{{categorie.nom}}</label>
+                                <input style="margin-right:20px;" name="categorie_{{categorie.pk}}" type="checkbox" value="{{categorie.pk}}">
+                                {%endfor%}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <center>
+                    <button type="submit" style="padding-right:10px;" onclick="$('#type_modal_{{type.pk}} form.modify').submit();" class="btn btn-default">Valider</button>
+                    <button class="btn btn-danger" onclick="$('#type_modal_{{type.pk}} form.delete').submit();" style="padding-left:10px;">Delete</button>
+                </center>
+            </div>
+        </div>  
+    </div>
+</div>
+{%endfor%}
+
+<button style="display:none;" id="newTypeBtn" data-toggle="modal" data-target="#newType"></button>
+<div id="newType" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <center><h4 class="modal-title">Info</h4></center>
+            </div>
+            <div class="modal-body">
+                <form class="modify" action="{%url 'comif.gestion' onglet='type'%}" method="post">
+                    {%csrf_token%}
+                    
+                    <input type="hidden" name="new_type" value="1">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Nom</label>
+                                <input type="text" class="form-control" name="nom_type" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Categorie : </label><br>
+                                {%for categorie in usableCategorie%}
+                                <label style="padding-right:20px;">{{categorie.nom}}</label>
+                                <input style="margin-right:20px;" name="categorie_{{categorie.pk}}" type="checkbox" value="{{categorie.pk}}">
+                                {%endfor%}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <center>
+                    <button type="submit" style="padding-right:10px;" onclick="$('#newType form.modify').submit();" class="btn btn-default">Valider</button>
+                </center>
+            </div>
+        </div>  
+    </div>
+</div>

@@ -1,0 +1,13 @@
+<div class="delete" style="display:none; width:100%;">
+    <div class="container-fluid">
+        <div class="row" style="padding-top:15px;">
+            <center>
+                <button class="btn btn-default change-img" pk="{{ content.pk }}">Mettre une photo</button>
+                <button data-toggle="modal" data-target="#settings-content-{{ content.pk }}" class="btn btn-default change-text" pk="{{ content.pk }}">Mettre du texte</button><br>
+                <button data-toggle="modal" data-target="#settings-content-{{ content.pk }}" class="btn btn-default change-css" pk="{{ content.pk }}">Modifier le style</button>
+                <button data-toggle="modal" data-target="#settings-content-{{ content.pk }}" class="btn btn-default change-position" pk="{{ content.pk }}">Changer la position</button>
+            </center>
+        </div>
+    </div>
+</div>
+

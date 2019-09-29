@@ -1,0 +1,63 @@
+{%for client in clients%}
+
+<div id="client_modal_{{client.pk}}" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <center><h4 class="modal-title">Info</h4></center>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <form action="" method="post" id="formdelete{{client.pk}}">
+                            {%csrf_token%}
+                            <input type="hidden" name="del_client" value="{{client.pk}}">
+                        </form>
+                        <form action="" method="post" id="form{{client.pk}}">
+                            {%csrf_token%}
+                            <input type="hidden" name="modal" value="{{client.pk}}">
+                            <div class="form-group">
+                                <label style="padding-right:30px;">A cotisé</label>
+                                <input type="checkbox" {%if client.cotisant%} checked {%endif%} value="1" name="cotisation">
+                            </div>
+                            <div class="form-group">
+                                <label>Rechargement</label>
+                                <input type="number" name="recharge" class="form-control">
+                            </div>
+                        </form>
+                        <div class="form-group">
+                            <center>
+                                <button type="submit" onclick="$('#form{{client.pk}}').submit();" class="btn btn-default">Valider</button>
+                                <button type="submit" onclick="$('#formdelete{{client.pk}}').submit();" class="btn btn-danger">Supprimer</button>
+                            </center>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Prix</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%for achat in client.achat.all%}
+                                <tr>
+                                    <th>{{achat.date|date:"Y-m-d H:i"}}</th>
+                                    <th>{{achat.description}}</th>
+                                    <th>{{achat.prix}}</th>
+                                </tr>
+                                {%endfor%}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{%endfor%}

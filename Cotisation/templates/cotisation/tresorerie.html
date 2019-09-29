@@ -1,0 +1,144 @@
+{% load static cotisant_tags%}
+<div class="row module" id="tresorerie">
+    <a data-toggle="modal" style="font-weight:bold;display:none;" id="newTresorerieBtn"  data-target="#new_tresorerie">Nouvelle Dépense</a>
+    <form method="post" action="{%url 'cotisation.action' association=association.nom%}">
+        {%csrf_token%}
+        <table id="treso" style="width:100%;" class="table table-striped tresorerie">
+            <thead>   
+                <tr>
+                    <th style="width:20px;"><input id="master_tresorerie" type="checkbox" value="TOUS"></th>
+                    <th>Date</th>
+                    <th>Sujet</th>
+                    <th>Moyen de payement</th>
+                    <th>Catégorie</th>
+                    <th>Crédit</th>
+                    <th>Débit</th>
+                    <th>Modifié par</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for depense in depenses%}
+                <tr>
+                    <th style="width:20px;"><input name="tresorerie_check_{{depense.pk}}" class="tresorerie_check" type="checkbox" value="{{depense.pk}}"></th>
+                    <th id="date_{{depense.pk}}" oncontextmenu="date({{depense.pk}});">{{depense.date}}</th>
+                    <th id="sujet_{{depense.pk}}" oncontextmenu="sujet({{depense.pk}});">{{depense.sujet}}</th>
+                    <th id="moyen_{{depense.pk}}" oncontextmenu="moyen({{depense.pk}});">{{depense.moyen}}</th>
+                    <th id="categorie_{{depense.pk}}" oncontextmenu="categorie({{depense.pk}});">{{depense.categorie}}</th>
+                    {%if depense.montant > 0%}
+                    <th id="montant_{{depense.pk}}" oncontextmenu="montant({{depense.pk}});">{{depense.montant}}</th>
+                    <th></th>
+                    {%else%}
+                    <th></th>
+                    <th id="montant_{{depense.pk}}" oncontextmenu="montant({{depense.pk}});">{{depense.montant}}</th>
+                    {%endif%}
+                    <th>{{depense.modifier.last_name}}</th>
+                </tr>
+                {%endfor%}
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>Solde total </th>
+                    <th>{{solde}} €</th>
+                </tr>
+            </tbody>
+        </table>
+
+        <br>
+        <div class="form-group">
+            <div class="container">
+                <div class="col-md-1 col-sm-3 col-xs-3">
+                    <label for="action">Action</label>
+                </div>
+                <div class="col-md-3 col-sm-5 col-xs-5">
+                    <input type="hidden" name="action_tresorerie" value="NULL">
+                    <select name="action" class="form-control" id="action" style="transform:translate(0px, -7px);">
+                        <option value="1">Supprimer</option>
+                        <option value="2">Action 2</option>
+                        <option value="3">Action 1</option>
+                    </select>
+                </div>
+                <div class="col-md-2 col-md-offset-1 col-sm-3 col-sm-offset-1 col-xs-3 col-xs-offset-1">
+                    <button style="transform:translate(0px, -7px);" type="submit" class="btn btn-primary">Valider</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div id="new_tresorerie" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <center>
+                        <h4 class="modal-title">Ajout dépense</h4>
+                    </center>
+                </div>
+                <div class="modal-body">
+                    <form method="POST">
+                        {%csrf_token%}
+                        <input type="hidden" name="tresorerie" value="tresorerie"/>
+                        <div class="form-group">
+                                <label for="date">Date</label>
+                                <div class='input-group date' id='tresorerieDate'>
+                                    <input type='text' class="form-control" name="date" required/>
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="obj">Objet</label>
+                            <input type="obj" class="form-control" name="obj" id="obj" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="montant">Montant</label>
+                            <input type="montant" class="form-control" name="montant" id="montant" required/>
+                        </div> 
+                        
+                        <div class="form-group">
+                            <label for="categorie">Catégorie</label>
+                            <select name="categorie" id="categorie" class="form-control"> 
+                                {%for moyen in categories%}
+                                <option value="{{moyen}}">{{moyen}}</option>
+                                {%endfor%}
+                                <option value="NC">Nouveau</option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-group" id="new_categorie" style="display:none;">
+                            <label for="new_categorie">Nom de la nouvelle catégorie</label>
+                            <input type="text" class="form-control" name="new_categorie"/>
+                        </div>  
+
+                        <div class="form-group">
+                            <label for="moyen_paye">Moyen de payement</label>
+                            <select name="moyen_paye" id="moyen_paye" class="form-control" required> 
+                                {%for moyen in moyens%}
+                                <option value="{{moyen}}">{{moyen}}</option>
+                                {%endfor%}
+                                <option value="NC">Nouveau</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="new_moyen" style="display:none;">
+                            <label for="new_moyen">Nom du nouveau moyen de payement</label>
+                            <input type="text" class="form-control" name="new_moyen"/>
+                        </div>  
+
+                        <div class="form-group">
+                            <center>
+                                <button class="btn btn-default" type="submit">Valider</button>
+                            </center>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

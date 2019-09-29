@@ -1,0 +1,39 @@
+#Cagnotte{
+    text-align:center;
+    transform:translate(0px, 40px);
+    color:#FFF;
+}
+
+p.strong{
+    text-align:center;
+    color:#FFF;
+    transform:translate(0px, 40px);
+}
+
+h1.titre{
+    text-align:center;
+    color:#FFF;
+    
+}
+
+canvas{
+    width:100%;
+    border-top:4px solid #000;
+}
+
+div.items{
+    border-bottom:4px solid #000;
+}
+
+.text_item{
+    margin-top:2%;
+}
+
+#achievment{
+    border:8px solid #000;
+}
+
+#aventure{
+    padding-left:0px;
+    padding-right:0px;
+}

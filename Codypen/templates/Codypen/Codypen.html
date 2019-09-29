@@ -1,0 +1,25 @@
+{%extends 'base.html'%} 
+{%load static compress%}
+ 
+{%block css%}{%endblock%}
+
+{%block header%}
+    {% include "header.html" with active_tab="Codypen"%}
+{%endblock%}
+{##}
+{#{%compress js%}#}
+{#    <script type="module" src="{% static 'js/codypen.js' %}"></script>#}
+{#{%endcompress%}#}
+
+
+{%block script%}
+    <script src="{% static 'js/codypen.js' %}"></script>
+     <script src="{% static 'js/codypen.js' %}"></script>
+{%endblock%}
+
+{%block content%}
+    <div id="container">
+
+    </div>
+
+{%endblock%}

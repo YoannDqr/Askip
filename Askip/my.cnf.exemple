@@ -1,0 +1,5 @@
+[client]
+database = askip
+user = root
+password = 
+default-character-set = utf8

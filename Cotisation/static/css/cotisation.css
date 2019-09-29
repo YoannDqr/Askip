@@ -1,0 +1,42 @@
+#cotisant{
+    display:none;
+    padding-top:75px;
+}
+
+#commande{
+    padding-top:75px;
+}
+
+#tresorerie{
+    padding-top:75px;
+    display:none;
+}
+
+#club{
+    padding-top:75px;
+    display:none;
+}
+
+#votes{
+    padding-top:75px;
+    display:none;
+}
+
+#postes{
+    padding-top:75px;
+    display:none;
+}
+
+#event{
+    padding-top:75px;
+    display:none;
+}
+.logo{
+    max-width:100%;
+}
+
+.circle{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+}

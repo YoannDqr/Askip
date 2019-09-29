@@ -1,0 +1,36 @@
+ .btn-quantite{
+    display:inline-block;
+    padding-left:20px;
+    padding-top:10px;
+    padding-bottom:10px;
+ }
+
+ .qte{
+    width: 40px;
+    border-radius: 20px;
+    border: 1px solid #9b8989;
+    padding-left: 6px;
+    padding-right: 6px;
+ }
+ .dataTables_filter{
+     display:inline-block;
+     padding-left:20px;
+ }
+
+
+.dataTables_paginate.paging_simple_numbers {
+	display: inline-block;
+	padding-left: 22%;
+	margin-top: 15px;
+	transform: translate(0px, 15px);
+}
+
+.dataTables_info{
+    display:none;
+}
+
+input[type="file"] {
+	border: 0px;
+	box-shadow: none;
+	padding: 0px;
+}

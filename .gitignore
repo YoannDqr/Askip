@@ -1,0 +1,16 @@
+Askip/my.cnf
+*.pyc
+media/upload/
+*/migrations/*
+\.vs/
+\.vscode/
+venv2/
+\.idea/
+
+node_modules/
+
+media/file_upload/
+
+a\.txt
+
+media/

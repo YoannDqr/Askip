@@ -1,0 +1,37 @@
+<div id="gestion-commande" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <center><h4 class="modal-title">Info</h4></center>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{%url 'comif.gestion' onglet='commande'%}" id="commande_form">
+                    {%csrf_token%}
+                    <input type="hidden" id="commande_id" name="commande_id" value="">
+                    {%for produit in produits%}
+                    <div class="form-group">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6 col-xs-6">
+                                    <input type="checkbox" name="produit_{{produit.pk}}" value="{{produit.pk}}">
+                                    <label class="form-label">{{produit.nom}}</label>
+                                </div>
+                                <div class="col-md-6 col-sm-6 col-xs-6">
+                                    <label class="form-label">Quantité </label>
+                                    <input style="width:60%; display:inline-block; margin-left:30px;" type="number" class="form-control" name="qte_{{produit.pk}}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {%endfor%}
+                    <div class="form-group">
+                        <center>
+                            <button class="btn btn-default" type="submit">Ajouter à la commande</button>
+                        </center>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

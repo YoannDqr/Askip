@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load tags static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/cotisation.css' %}" />
+
+{% endblock %}
+
+{%block header%}
+    {% include "header.html" with active_tab="Associatif"%}
+{%endblock%}
+{% block content %}
+
+{% if error %}
+    <div class="alert alert-warning alert-dismissible">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Erreur !</strong> {{ error.0 }}
+        </div>
+{% endif %}
+<center>
+<form method="post">
+    {%csrf_token%}  
+    <div class="form-group">
+        <select name="association" class="form-control" id="association" style="width:25%; transform:translate(0px, -7px);">
+            <option value="NC">Association</option>
+            {%for association in associations%}
+            <option value="{{association.nom}}">{{association.nom}}</option>
+            {%endfor%}
+        </select>
+    </div>
+    <div class="form-group">
+        <input style="width:25%;" class="form-control" type="password" name="password" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Valider</button>
+</form>
+</center>
+{%endblock%}

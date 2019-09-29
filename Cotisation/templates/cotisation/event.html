@@ -1,0 +1,135 @@
+{% load static cotisant_tags%}
+<div class="row module" id="event">
+    <div class="container-liquid">
+        <div class="row">
+            <a id="newEvent" style="font-weight:bold;display:none;" data-toggle="modal" data-target="#nouveau_event">Nouvel evenement</a><br>
+            <form method="post" action="{%url 'cotisation.action' association=association.nom%}">
+                {%csrf_token%}
+            
+                <table style="width:100%;" class="table table-striped event">
+                    <thead>
+                        <tr>
+                            <th style="width:20px;"><input id="master_event" type="checkbox" value="TOUS"></th>
+                            <th>Nom</th>
+                            <th>Description</th>
+                            <th>Prix</th>
+                            <th>Date de début</th>
+                            <th>Date de fin</th>
+                            <th>Nombre de participant</th>
+                            <th>Nombre de place</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for event in association.evenement.all%}
+                        <tr>
+                            <th style="width:20px;"><input type="checkbox" class="event_check" name="event_check_{{event.pk}}" value="{{event.pk}}"></th>
+                            <th><a href="{% url 'cotisation.modifyEvent' association=association.pk event=event.pk %}">{{event.nom}}</a></th>
+                            <th>{{event.description}}</th>
+                            <th>{{event.prix}}</th>
+                            <th oncontextmenu="startDateEvent({{event.pk}});" pk="{{event.pk}}" id="startDateEvent_{{event.pk}}">{{event.startDate}}</th>
+                            <th oncontextmenu="endDateEvent({{event.pk}});" pk="{{event.pk}}" id="endDateEvent_{{event.pk}}">{{event.endDate}}</th>
+                            <th>{{event|nombre_participant}}</th>
+                            <th>{{event.nombre_place}}</th>
+                            
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+                <br>
+                <div class="form-group">
+                    <div class="container">
+                        <div class="col-md-1 col-sm-3 col-xs-3">
+                            <label for="action">Action</label>
+                        </div>
+                        <div class="col-md-3 col-sm-5 col-xs-5">
+                            <input type="hidden" name="action_event" value="NULL">
+                            <select name="action" class="form-control" id="action" style="transform:translate(0px, -7px);">
+                                <option value="1">Supprimer</option>
+                                <option value="2">Action 1</option>
+                                <option value="3">Action 2</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-md-offset-1 col-sm-3 col-sm-offset-1 col-xs-3 col-xs-offset-1">
+                            <button style="transform:translate(0px, -7px);" type="submit" class="btn btn-primary">Valider</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        
+            <div id="nouveau_event" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <center>
+                                <h4 class="modal-title">Nouvel Evénement</h4>
+                            </center>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST">
+                                {%csrf_token%}
+                                <input type="hidden" name="cotisation" value="cotisation">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <input type="hidden" name="new_event" value="0">
+                                        <label  class="form-label">Nom</label>
+                                        <input type="text" name="nom" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label  class="form-label">Description</label>
+                                        <textarea name="description" cols="30" rows="10" class="form-control" required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Date de début</label>
+                                        <div class='input-group date' id='eventDate'>
+                                            <input type='text' class="form-control" name="startDate" required/>
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Date de fin</label>
+                                        <div class='input-group date' id='eventEndDate'>
+                                            <input type='text' class="form-control" name="endDate" required />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="" class="form-label">Prix</label>
+                                        <input type="number" name="prix" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="" class="form-label">Nombre de place</label>
+                                        <input type="number" name="nb_place" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="" class="form-label">Cotisant uniquement</label>
+                                        <input type="checkbox" name="cotisant" style="margin-left:20px;">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <center>
+                                        <button type="submit" class="btn btn-default">Valider</button>
+                                    </center>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="padding-top:80px;">
+        <div col-md-8 col-sm-12 col-xs-12 col-md-offset-2>
+            <div id="calendar"></div>
+        </div>
+        {%for event in association.evenement.all%}
+        <span style="display:none;" id="_privatekey{{event.pk}}_" pk="{{event.pk}}" startDate="{{event.startDate|date:'H:i'}}" endDate="{{event.endDate|date:'H:i'}}"></span>
+        {%endfor%}
+    </div>
+</div>
+
+
